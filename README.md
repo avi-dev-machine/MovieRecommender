@@ -25,7 +25,12 @@ cd MovieRecommender
 - Download the data from [this link](#).
 - Place the `data` folder in the same directory as `app.py`.
 
-### 3. Run the Application
+### 3. Install the necessary Python packages by running:
+```bash
+  pip install pandas numpy scikit-learn faiss-cpu tqdm joblib flask
+  ```
+
+### 4. Run the Application
 ```bash
 python app.py
 ```
