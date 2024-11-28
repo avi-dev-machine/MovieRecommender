@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Recommender</title>
+    <style>
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #121212;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* Container */
+        .content {
+            max-width: 800px;
+            width: 100%;
+            max-height: 80vh; /* Set a maximum height */
+            padding: 2rem;
+            background-color: #1f1f1f;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+            overflow-y: auto; /* Allow vertical scrolling */
+        }
+
+        /* Content */
+        .content {
+            max-width: 800px;
+            width: 100%;
+            padding: 2rem;
+            background-color: #1f1f1f;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Heading */
+        h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #00e5ff;
+            text-transform: uppercase;
+            margin-bottom: 2rem;
+            animation: slideIn 1s ease-out;
+        }
+
+        /* Form Container */
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            text-align: left;
+        }
+
+        input,
+        textarea {
+            background-color: #333;
+            border: 1px solid #444;
+            padding: 1rem;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1.2rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: #00e5ff;
+            box-shadow: 0 0 5px #00e5ff;
+        }
+
+        button {
+            background: linear-gradient(90deg, #ff4081, #00e5ff);
+            padding: 1rem;
+            border-radius: 10px;
+            font-size: 1.5rem;
+            border: none;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            background: linear-gradient(90deg, #00e5ff, #ff4081);
+        }
+
+        button:active {
+            transform: scale(1);
+        }
+
+        /* Results Section */
+        .results {
+            margin-top: 3rem;
+            display: none;
+            color: #fff;
+        }
+
+        #recommendationsList {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .movie-card {
+            background-color: #222;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.8);
+        }
+
+        .movie-card img {
+            width: 100%;
+            height: 350px;
+            object-fit: cover;
+        }
+
+        .movie-card .details {
+            padding: 1rem;
+        }
+
+        .movie-card .details h4 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #00e5ff;
+        }
+
+        .movie-card .details p {
+            font-size: 1rem;
+            color: #bbb;
+        }
+
+        /* Animation */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsiveness */
+        @media (max-width: 768px) {
+            .movie-card {
+                width: 100%;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            button {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="content">
+            <h1>Movie Recommender</h1>
+
+            <div class="form-container">
+                <div class="input-group">
+                    <label for="queryInput">What kind of movie are you looking for?</label>
+                    <textarea id="queryInput" placeholder="Describe your preferences (e.g., 'action movies like Star Wars')"></textarea>
+                </div>
+
+                <div class="input-group">
+                    <label for="numRecommendations">Number of recommendations:</label>
+                    <input type="number" id="numRecommendations" value="5" min="1" max="20">
+                </div>
+
+                <button onclick="getRecommendations()">Get Recommendations</button>
+            </div>
+
+            <div id="results" class="results">
+                <h3>Recommended Movies:</h3>
+                <div id="recommendationsList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+    <script>
+        // Get recommendations and display them
+        async function getRecommendations() {
+            const query = document.getElementById('queryInput').value;
+            const numRecommendations = parseInt(document.getElementById('numRecommendations').value);
+
+            if (!query) {
+                alert('Please enter your movie preferences');
+                return;
+            }
+
+            try {
+                const response = await axios.post('/recommend', {
+                    query: query,
+                    n_recommendations: numRecommendations
+                });
+
+                if (response.data.success) {
+                    displayRecommendations(response.data.recommendations);
+                    console.log(response);
+                    
+                } else {
+                    alert('Error: ' + response.data.error);
+                }
+            } catch (error) {
+                alert('Error getting recommendations: ' + error.message);
+            }
+        }
+
+        // Display recommended movies
+        function displayRecommendations(recommendations) {
+            const resultsDiv = document.getElementById('results');
+            const recommendationsList = document.getElementById('recommendationsList');
+
+            recommendationsList.innerHTML = '';
+
+            recommendations.forEach((movie, index) => {
+                const movieElement = document.createElement('div');
+                movieElement.className = 'movie-card';
+
+                const movieImage = movie.image_url || 'https://via.placeholder.com/250x350.png?text=No+Image';
+
+                movieElement.innerHTML = `
+                    <img src="${movieImage}" alt="${movie.title}">
+                    <div class="details">
+                        <h4>${movie.title}</h4>
+                        <p>Genres: ${movie.genres}</p>
+                        <p>Rating: ${movie.avg_rating ? movie.avg_rating.toFixed(1) : 'N/A'} / 5</p>
+                    </div>
+                `;
+
+                recommendationsList.appendChild(movieElement);
+            });
+
+            resultsDiv.style.display = 'block';
+        }
+    </script>
+
+</body>
+
+</html>
