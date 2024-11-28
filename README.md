@@ -22,7 +22,7 @@ cd MovieRecommender
 ```
 
 ### 2. Download and Place the Data
-- Download the data from [this link](https://xhamster.desi/).
+- Download the data from [this link](https://drive.google.com/drive/folders/1dPwH78Zs5RIodYee3p1SX114xURozxnT?usp=sharing).
 - Place the `data` folder in the same directory as `app.py`.
 
 ### 3. Install the necessary Python packages by running:
