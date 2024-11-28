@@ -7,7 +7,7 @@ This repository contains a machine learning algorithm implemented in **`app.py`*
 - **Local Hosting**: Automatically hosts a web page on `localhost` to interact with the model.
 
 ## Requirements
-- **Data**: To train the model, download the required data from [this link](https://xhamster.desi/) and place the downloaded `data` folder in the same directory as `app.py`.
+- **Data**: To train the model, download the required data from [this link](https://drive.google.com/drive/folders/1dPwH78Zs5RIodYee3p1SX114xURozxnT?usp=sharing) and place the downloaded `data` folder in the same directory as `app.py`.
 - **Python Packages**: Install the necessary Python packages by running:
   ```bash
   pip install pandas numpy scikit-learn faiss-cpu tqdm joblib flask
